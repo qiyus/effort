@@ -4,13 +4,13 @@
     <item
         android:id="@+id/action_edit"
         android:orderInCategory="90"
-        android:title="edit"
+        android:title="@string/action_edit"
         android:icon="@android:drawable/ic_menu_edit"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_share"
         android:orderInCategory="100"
-        android:title="share"
+        android:title="@string/action_share"
         android:icon="@android:drawable/ic_menu_share"
         app:showAsAction="ifRoom" />
 </menu>

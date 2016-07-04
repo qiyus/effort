@@ -84,14 +84,15 @@ public class MainActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_add:
-                Intent intent = new Intent(this, AddActivity.class);
-                startActivity(intent);
+                Intent addIntent = new Intent(this, AddActivity.class);
+                startActivity(addIntent);
                 break;
             case R.id.action_punch:
                 Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_report:
-                Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+                Intent reportIntent = new Intent(this, ReportActivity.class);
+                startActivity(reportIntent);
                 break;
             default:
                 break;
@@ -106,18 +107,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
+        if (id == R.id.nav_backup) {
+            Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_download) {
+            Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_copyright) {
+            Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_send) {
-
+            Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

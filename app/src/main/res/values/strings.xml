@@ -13,12 +13,22 @@
     <string name="form_add_alarm">提醒时间：</string>
     <string name="form_btn_ok">确定</string>
 
-    <!--消息-->
+    <!--bar-->
     <string name="action_report">年度报告</string>
     <string name="action_punch">打卡</string>
     <string name="action_add">添加目标</string>
     <string name="action_edit">编辑</string>
     <string name="action_share">分享</string>
 
+    <!--消息-->
     <string name="msg_work">功能开发中！</string>
+
+    <!--菜单-->
+    <string name="backup">备份数据</string>
+    <string name="download">下载数据</string>
+    <string name="abort">关于</string>
+    <string name="mail">报告问题</string>
+    <string name="copyright">版权信息</string>
+
+    <string name="title_activity_report">ReportActivity</string>
 </resources>
