@@ -15,12 +15,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.vigorx.effort.target.TargetAdapter;
-import com.vigorx.effort.target.TargetInfo;
+import com.vigorx.effort.database.EffortOperations;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,24 +33,36 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        assert drawer != null;
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         ListView listView = (ListView) findViewById(R.id.list);
-        List<TargetInfo> data = new ArrayList<TargetInfo>();
-        for (int i = 0; i < 3; i++) {
-            data.add(new TargetInfo());
-        }
-        listView.setAdapter(new TargetAdapter(this, data));
+
+        // 数据库操作
+        EffortOperations operator = EffortOperations.getInstance(this);
+        operator.open();
+        List<EffortInfo> data = operator.getAllEffort();
+        operator.close();
+
+        assert listView != null;
+        listView.setAdapter(new EffortListAdapter(this, data));
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                EffortInfo effort = (EffortInfo)parent.getAdapter().getItem(position);
+                intent.putExtra(DetailActivity.EFFORT_KEY, effort);
                 startActivity(intent);
             }
         });
@@ -60,6 +71,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        assert drawer != null;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -85,6 +97,7 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.action_add:
                 Intent addIntent = new Intent(this, AddActivity.class);
+                addIntent.putExtra(AddActivity.TYPE_KEY, AddActivity.TYPE_ADD);
                 startActivity(addIntent);
                 break;
             case R.id.action_punch:
@@ -118,6 +131,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        assert drawer != null;
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

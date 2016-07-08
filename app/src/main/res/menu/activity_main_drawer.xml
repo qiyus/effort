@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group>
         <item
             android:id="@+id/nav_backup"
             android:icon="@drawable/ic_menu_backup"
@@ -10,7 +9,6 @@
             android:id="@+id/nav_download"
             android:icon="@drawable/ic_menu_download"
             android:title="@string/download" />
-    </group>
 
     <item android:title="@string/abort">
         <menu>

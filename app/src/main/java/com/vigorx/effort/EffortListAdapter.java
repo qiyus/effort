@@ -1,33 +1,28 @@
-package com.vigorx.effort.target;
+package com.vigorx.effort;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.SimpleAdapter;
-import android.widget.TextView;
-
-import com.vigorx.effort.DetailActivity;
-import com.vigorx.effort.R;
-
-public class TargetAdapter extends BaseAdapter{
+public class EffortListAdapter extends BaseAdapter{
+	private static final String WIDGET_IMAGE = "image";
 
 	private Context mContext;
 	private LayoutInflater mInflater;
-	private List<TargetInfo> mData;
+	private List<EffortInfo> mData;
 
-	public TargetAdapter(Context context, List<TargetInfo> data) {
+	public EffortListAdapter(Context context, List<EffortInfo> data) {
 		mContext = context;
 		mInflater = LayoutInflater.from(context);
 		mData = data;
@@ -42,7 +37,7 @@ public class TargetAdapter extends BaseAdapter{
 	}
 
 	@Override
-	public TargetInfo getItem(int position) {
+	public EffortInfo getItem(int position) {
 		if (null != mData) {
 			return mData.get(position);
 		}
@@ -68,35 +63,30 @@ public class TargetAdapter extends BaseAdapter{
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		TargetInfo itemInfo = mData.get(position);
+		EffortInfo itemInfo = mData.get(position);
 		String title = (position + 1) + "、" + itemInfo.getTitle();
 		viewHolder.title.setText(title);
 
-		String[] key = { "image" };
+		String[] key = { WIDGET_IMAGE };
 		int[] id = { R.id.image };
-		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-		itemInfo.getStatus()[6] = true;
-		itemInfo.getStatus()[13] = true;
+		List<Map<String, Object>> dataList = new ArrayList<>();
+		itemInfo.getStatus()[6] = 1;
+		itemInfo.getStatus()[13] = 1;
 		for (int i = 0; i < 28; i++) {
 			Map<String, Object> map = new HashMap<String, Object>();
-			if (itemInfo.getStatus()[i]) {
-				map.put("image", R.drawable.on);
+			if (1 == itemInfo.getStatus()[i]) {
+				map.put(WIDGET_IMAGE, R.drawable.on);
 			} else {
-				map.put("image", R.drawable.off);
+				map.put(WIDGET_IMAGE, R.drawable.off);
 			}
 			dataList.add(map);
 		}
 
 		SimpleAdapter imageAdapter = new SimpleAdapter(mContext, dataList, R.layout.on_off_item, key, id);
 		viewHolder.gridView.setAdapter(imageAdapter);
-		viewHolder.gridView.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				Intent intent = new Intent(mContext, DetailActivity.class);
-				mContext.startActivity(intent);
-			}
-		});
+		viewHolder.gridView.setClickable(false);
+		viewHolder.gridView.setPressed(false);
+		viewHolder.gridView.setEnabled(false);
 		return convertView;
 	}
 

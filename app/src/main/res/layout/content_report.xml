@@ -4,19 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/layer_bg"
     android:layout_margin="10dp"
+    android:background="@drawable/layer_bg"
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.vigorx.effort.ReportActivity"
     tools:showIn="@layout/activity_report">
 
+
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/report_chart"
+        android:layout_weight="3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/textView"
+        android:layout_weight="2"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/msg_work"
-        android:textSize="18dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:id="@+id/textView2" />
+        android:layout_gravity="left"
+        android:layout_margin="20dp"
+        android:text="亲爱的汤姆，你好！\n       你共设定目标 122 项，完成率 100% 的目标 100 项，完成率 90% 以上的目标 118 项。恭喜你取得这么好的成绩。\n                                               此致，敬礼！\n                                               vigorx 工作室" />
 
 </LinearLayout>

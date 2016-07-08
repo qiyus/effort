@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" 
-    android:descendantFocusability="blocksDescendants">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="23dp"
-        android:layout_height="23dp">
+        android:layout_height="23dp"
+        android:focusable="false">
     </ImageView>
 
 </LinearLayout>
