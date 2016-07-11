@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.vigorx.effort.database.EffortOperations;
+import com.vigorx.effort.entity.EffortInfo;
 
 import java.util.List;
 
@@ -48,10 +49,10 @@ public class MainActivity extends AppCompatActivity
         ListView listView = (ListView) findViewById(R.id.list);
 
         // 数据库操作
-        EffortOperations operator = EffortOperations.getInstance(this);
-        operator.open();
-        List<EffortInfo> data = operator.getAllEffort();
-        operator.close();
+        EffortOperations effortOperations = EffortOperations.getInstance(this);
+        effortOperations.open();
+        List<EffortInfo> data = effortOperations.getAllEffort();
+        effortOperations.close();
 
         assert listView != null;
         listView.setAdapter(new EffortListAdapter(this, data));

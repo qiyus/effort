@@ -18,6 +18,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.vigorx.effort.R;
+import com.vigorx.effort.entity.EffortInfo;
+import com.vigorx.effort.entity.PunchesInfo;
 
 /**
  * 日历gridview中的每一个item显示的textview
@@ -47,8 +49,8 @@ public class CalendarAdapter extends BaseAdapter {
 	private String sys_year = "";
 	private String sys_month = "";
 	private String sys_day = "";
-	boolean clockedRecords[];
-	String startDate = "2016-6-20";
+	private PunchesInfo[] punchesInfos;
+	private String startDate;
 
 	private int positionToClockedIndex(int position) {
 		int index = -1;
@@ -70,10 +72,15 @@ public class CalendarAdapter extends BaseAdapter {
 
 	private boolean isClockedOff(int position) {
 		int index = positionToClockedIndex(position);
-		if (index < 0 || index > 27) {
+		if (index < 0 || index > EffortInfo.EFFORT_SIZE - 1) {
 			return false;
 		}
-		return clockedRecords[index];
+		
+		boolean isOn = false;
+		if (1 == punchesInfos[index].getComplete()){
+			isOn = true;
+		}
+		return isOn;
 	}
 
 	public CalendarAdapter() {
@@ -86,10 +93,11 @@ public class CalendarAdapter extends BaseAdapter {
 	}
 
 	public CalendarAdapter(Context context, Resources rs, int jumpMonth, int jumpYear, int year_c, int month_c,
-			int day_c, boolean[] clockedRecords) {
+			int day_c, String startDate, PunchesInfo[] punchesInfos) {
 		this();
 		this.context = context;
-		this.clockedRecords = clockedRecords;
+		this.startDate = startDate;
+		this.punchesInfos = punchesInfos;
 		sc = new SpecialCalendar();
 		lc = new LunarCalendar();
 		this.res = rs;
@@ -323,8 +331,13 @@ public class CalendarAdapter extends BaseAdapter {
 	 */
 	public void setColorDataPosition(int position) {
 		int index = positionToClockedIndex(position);
-		if (index >= 0 && index < 28) {
-			clockedRecords[index] = !clockedRecords[index];
+		if (index >= 0 && index < EffortInfo.EFFORT_SIZE) {
+			if (1 == punchesInfos[index].getComplete()) {
+				punchesInfos[index].setComplete(0);
+			}
+			else {
+				punchesInfos[index].setComplete(1);
+			}
 			notifyDataSetChanged();
 		}
 	}

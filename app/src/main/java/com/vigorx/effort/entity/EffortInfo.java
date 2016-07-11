@@ -1,4 +1,4 @@
-package com.vigorx.effort;
+package com.vigorx.effort.entity;
 
 
 import android.os.Parcel;
@@ -11,10 +11,9 @@ public class EffortInfo implements Parcelable {
     private String startDate;
     private int haveAlarm;
     private String alarm;
-    private int status[] = new int[EFFORT_SIZE];
+    private PunchesInfo punches[] = new PunchesInfo[EFFORT_SIZE];
 
     public EffortInfo() {
-        return;
     }
 
     protected EffortInfo(Parcel in) {
@@ -23,7 +22,7 @@ public class EffortInfo implements Parcelable {
         startDate = in.readString();
         haveAlarm = in.readInt();
         alarm = in.readString();
-        status = in.createIntArray();
+        punches = in.createTypedArray(PunchesInfo.CREATOR);
     }
 
     @Override
@@ -33,7 +32,7 @@ public class EffortInfo implements Parcelable {
         dest.writeString(startDate);
         dest.writeInt(haveAlarm);
         dest.writeString(alarm);
-        dest.writeIntArray(status);
+        dest.writeTypedArray(punches, flags);
     }
 
     @Override
@@ -93,11 +92,11 @@ public class EffortInfo implements Parcelable {
         this.alarm = alarm;
     }
 
-    public int[] getStatus() {
-        return status;
+    public PunchesInfo[] getPunches() {
+        return punches;
     }
 
-    public void setStatus(int[] status) {
-        this.status = status;
+    public void setPunches(PunchesInfo[] punches) {
+        this.punches = punches;
     }
 }

@@ -2,7 +2,6 @@ package com.vigorx.effort;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +19,9 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.vigorx.effort.calendar.CalendarView;
 import com.vigorx.effort.database.EffortOperations;
+import com.vigorx.effort.entity.EffortInfo;
 
 import java.util.ArrayList;
 
@@ -47,6 +48,9 @@ public class DetailActivity extends AppCompatActivity {
         });
 
         mEffort = getIntent().getParcelableExtra(EFFORT_KEY);
+
+        CalendarView calendarView = (CalendarView) findViewById(R.id.calendar);
+        calendarView.initView(mEffort.getStartDate(), mEffort.getPunches());
 
         mChart = (PieChart) findViewById(R.id.detail_chart);
         showPieChart();

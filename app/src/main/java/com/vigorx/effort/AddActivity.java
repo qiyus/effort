@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -14,15 +15,16 @@ import android.widget.Switch;
 import android.widget.TimePicker;
 
 import com.vigorx.effort.database.EffortOperations;
+import com.vigorx.effort.entity.EffortInfo;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class AddActivity extends AppCompatActivity {
     public static final String TYPE_KEY = "type";
     public static final String EFFORT_KEY = "effort";
     public static final int TYPE_EDIT = 2;
     public static final int TYPE_ADD = 1;
+    public static final String TAG = "AddActivity";
 
     private int mType;
     private EffortInfo mEffort;
@@ -52,9 +54,9 @@ public class AddActivity extends AppCompatActivity {
         mTitle = (EditText) findViewById(R.id.editTextTitle);
 
         mStartDate = (EditText) findViewById(R.id.editTextStartDate);
-        mStartDate.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        mStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFocusChange(View v, boolean hasFocus) {
+            public void onClick(View v) {
                 DatePickerDialog dialog;
                 Calendar calendar = Calendar.getInstance();
                 int year = calendar.get(Calendar.YEAR);
@@ -99,9 +101,9 @@ public class AddActivity extends AppCompatActivity {
             }
         });
 
-        mEffort = getIntent().getParcelableExtra(EFFORT_KEY);
         mType = getIntent().getIntExtra(TYPE_KEY, TYPE_ADD);
         if (mType == TYPE_EDIT) {
+            mEffort = getIntent().getParcelableExtra(EFFORT_KEY);
             mTitle.setText(mEffort.getTitle());
             mStartDate.setText(mEffort.getStartDate());
             mHaveAlarm.setChecked((mEffort.getHaveAlarm() == 1));
@@ -109,6 +111,7 @@ public class AddActivity extends AppCompatActivity {
             mAlarm.setCurrentMinute(Integer.parseInt(mEffort.getAlarm().split(":")[1]));
             setTitle(R.string.title_activity_edit);
         } else {
+            mEffort = new EffortInfo();
             setTitle(R.string.title_activity_add);
         }
     }
@@ -116,7 +119,9 @@ public class AddActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            String date = year + "-" + monthOfYear + "-" + dayOfMonth;
+            String date = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+            Log.i(date, TAG);
+            mStartDate.setText(date);
             mEffort.setStartDate(date);
         }
     };
