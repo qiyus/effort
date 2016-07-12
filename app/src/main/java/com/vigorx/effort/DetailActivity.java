@@ -7,9 +7,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -19,18 +21,23 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.vigorx.effort.calendar.CalendarAdapter;
 import com.vigorx.effort.calendar.CalendarView;
+import com.vigorx.effort.calendar.ClickDataListener;
 import com.vigorx.effort.database.EffortOperations;
 import com.vigorx.effort.entity.EffortInfo;
+import com.vigorx.effort.entity.PunchesInfo;
 
 import java.util.ArrayList;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements ClickDataListener{
 
+    private static final String TAG = "DetailActivity";
     public static final String EFFORT_KEY = "effort";
 
     private PieChart mChart;
     private EffortInfo mEffort;
+    private CalendarView calendarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +56,9 @@ public class DetailActivity extends AppCompatActivity {
 
         mEffort = getIntent().getParcelableExtra(EFFORT_KEY);
 
-        CalendarView calendarView = (CalendarView) findViewById(R.id.calendar);
+        calendarView = (CalendarView) findViewById(R.id.calendar);
         calendarView.initView(mEffort.getStartDate(), mEffort.getPunches());
+        calendarView.setClickDataListener(this);
 
         mChart = (PieChart) findViewById(R.id.detail_chart);
         showPieChart();
@@ -62,14 +70,30 @@ public class DetailActivity extends AppCompatActivity {
         mChart.invalidate();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        EffortOperations operations = EffortOperations.getInstance(this);
+        operations.open();
+        operations.updatePunches(mEffort.getPunches());
+        operations.close();
+    }
+
     private void showPieChart() {
+        float fontSize = 13f;
         // 半径
         mChart.setHoleRadius(50f);
         // 半透明圈
         mChart.setTransparentCircleRadius(53f);
         // 饼图中间的文字
-        mChart.setCenterText(mEffort.getAlarm());
-        mChart.setCenterTextSize(15f);
+        if (mEffort.getHaveAlarm() == 1) {
+            mChart.setCenterText(mEffort.getAlarm());
+        }
+        else {
+            mChart.setCenterText(getResources().getString(R.string.alarm_off));
+        }
+        mChart.setCenterTextSize(fontSize);
         // 可以手动旋转
         mChart.setRotationEnabled(true);
         // 显示成百分比
@@ -78,15 +102,12 @@ public class DetailActivity extends AppCompatActivity {
         mChart.setDrawHoleEnabled(true);
         // 显示文本在饼块
         mChart.setDrawEntryLabels(false);
-        mChart.setEntryLabelTextSize(12f);
+        mChart.setEntryLabelTextSize(fontSize);
 
         // 描述文字
-        if (mEffort.getHaveAlarm() == 1) {
-            mChart.setDescription(getResources().getString(R.string.alarm_on));
-        } else {
-            mChart.setDescription(getResources().getString(R.string.alarm_off));
-        }
-        mChart.setDescriptionTextSize(12f);
+        String description = getResources().getString(R.string.startDate) + mEffort.getStartDate();
+        mChart.setDescription(description);
+        mChart.setDescriptionTextSize(fontSize);
 
         mChart.setData(getPieData());
 
@@ -100,15 +121,15 @@ public class DetailActivity extends AppCompatActivity {
         l.setXEntrySpace(17f);
         l.setYEntrySpace(0f);
         l.setYOffset(0f);
-        l.setTextSize(12f);
+        l.setTextSize(fontSize);
     }
 
     private PieData getPieData() {
 
         // 饼块的数据
         ArrayList<PieEntry> yValues = new ArrayList<>();
-        yValues.add(new PieEntry(10, getResources().getString(R.string.complete)));
-        yValues.add(new PieEntry(18, getResources().getString(R.string.progress)));
+        yValues.add(new PieEntry(getCompleteNumber(), getResources().getString(R.string.complete)));
+        yValues.add(new PieEntry(getProgressNumber(), getResources().getString(R.string.progress)));
 
         PieDataSet pieDataSet = new PieDataSet(yValues, mEffort.getTitle());
 
@@ -176,7 +197,6 @@ public class DetailActivity extends AppCompatActivity {
                         .setNegativeButton(R.string.delete_cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                return;
                             }
                         })
                         .create();
@@ -187,5 +207,26 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private int getCompleteNumber() {
+        int number = 0;
+        PunchesInfo[] infos = mEffort.getPunches();
+        for (int i = 0; i < EffortInfo.EFFORT_SIZE; i++) {
+            if (1 == infos[i].getComplete()) {
+                number++;
+            }
+        }
+        return number;
+    }
+
+    private int getProgressNumber() {
+        return EffortInfo.EFFORT_SIZE - getCompleteNumber();
+    }
+
+    @Override
+    public void clickData() {
+        mChart.setData(getPieData());
+        mChart.invalidate();
     }
 }

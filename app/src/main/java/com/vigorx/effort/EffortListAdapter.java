@@ -57,7 +57,7 @@ public class EffortListAdapter extends BaseAdapter {
         ViewHolder viewHolder;
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = mInflater.inflate(R.layout.target_list_item, null);
+            convertView = mInflater.inflate(R.layout.effort_list_item, null);
             viewHolder.title = (TextView) convertView.findViewById(R.id.title);
             viewHolder.gridView = (GridView) convertView.findViewById(R.id.gridView);
             convertView.setTag(viewHolder);

@@ -162,6 +162,7 @@ public class CalendarView extends LinearLayout implements OnClickListener {
         int Height = display.getHeight();
 
         gridView = new GridView(mContext);
+        gridView.setId(R.id.calendar_gridview);
         gridView.setNumColumns(7);
         gridView.setColumnWidth(40);
         // gridView.setStretchMode(GridView.STRETCH_COLUMN_WIDTH);
@@ -185,18 +186,11 @@ public class CalendarView extends LinearLayout implements OnClickListener {
         gridView.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-                // 点击任何一个item，得到这个item的日期(排除点击的是周日到周六(点击不响应))
-                int startPosition = calV.getStartPositon();
-                int endPosition = calV.getEndPosition();
-                if (startPosition <= position + 7 && position <= endPosition - 7) {
-                    String scheduleDay = calV.getDateByClickItem(position).split("\\.")[0]; // 这一天的阳历
-                    String scheduleYear = calV.getShowYear();
-                    String scheduleMonth = calV.getShowMonth();
-                    ((CalendarAdapter) arg0.getAdapter()).setColorDataPosition(position);
-                    if (clickDataListener != null) {
-                        clickDataListener.clickData(scheduleYear, scheduleMonth, scheduleDay);
-                    }
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                CalendarAdapter adapter = (CalendarAdapter) parent.getAdapter();
+                adapter.setColorDataPosition(position);
+                if (clickDataListener != null) {
+                    clickDataListener.clickData();
                 }
             }
         });

@@ -61,8 +61,7 @@ public class CalendarAdapter extends BaseAdapter {
 			if (compMonth == 0) {
 				index = position - startDay - dayOfWeek + 1;
 			} else {
-				int clockedDaysOfLastMonth = lastDaysOfMonth - startDay + 1;
-				index = position + clockedDaysOfLastMonth - dayOfWeek;
+				index = position + lastDaysOfMonth - startDay - dayOfWeek;
 			}
 
 		}

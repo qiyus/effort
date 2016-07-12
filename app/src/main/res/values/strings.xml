@@ -31,6 +31,8 @@
 
     <!-- MainActivity -->
     <string name="period">. </string>
+    <string name="punch_to_day">今日打卡</string>
+    <string name="ok">确定</string>
 
     <!-- AddActivity -->
     <string name="form_add_title">目标：</string>
@@ -45,7 +47,7 @@
     <string name="all_number">设立数</string>
 
     <!-- DetailActivity -->
-    <string name="alarm_on">提醒开启</string>
+    <string name="startDate">开始日期：</string>
     <string name="alarm_off">提醒关闭</string>
     <string name="progress">进行中</string>
     <string name="complete">已完成</string>

@@ -1,16 +1,20 @@
 package com.vigorx.effort;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -62,7 +66,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
-                EffortInfo effort = (EffortInfo)parent.getAdapter().getItem(position);
+                EffortInfo effort = (EffortInfo) parent.getAdapter().getItem(position);
                 intent.putExtra(DetailActivity.EFFORT_KEY, effort);
                 startActivity(intent);
             }
@@ -102,7 +106,25 @@ public class MainActivity extends AppCompatActivity
                 startActivity(addIntent);
                 break;
             case R.id.action_punch:
-                Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.customAlertDialog);
+                builder.setIcon(android.R.drawable.ic_menu_today);
+                builder.setTitle(R.string.punch_to_day);
+                builder.setMultiChoiceItems(getTodayTitle(), getTodayComplete(), new DialogInterface.OnMultiChoiceClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                        Toast.makeText(MainActivity.this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                builder.setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(MainActivity.this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                builder.create().show();
+
                 break;
             case R.id.action_report:
                 Intent reportIntent = new Intent(this, ReportActivity.class);
@@ -113,6 +135,14 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private String[] getTodayTitle() {
+        return new String[]{"测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标12"};
+    }
+
+    private boolean[] getTodayComplete() {
+        return new boolean[]{false, true, false, true, false, true, false};
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

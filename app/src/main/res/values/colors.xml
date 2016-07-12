@@ -7,4 +7,5 @@
     <color name="colorAll">#FFC125</color>
     <color name="colorProgressPie">#CDCDCD</color>
     <color name="colorCompletePie">#90BCDF</color>
+    <color name="colorDialog">#EAFFEFD5</color>
 </resources>

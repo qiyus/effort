@@ -69,7 +69,7 @@ public class LunarCalendar {
 			return 0;
 	}
 
-	// ====== 传回农历 y年闰哪个月 1-12 , 没闰传回 0
+	// ====== 传回农历 y年闰哪个月 daybg1-12 , 没闰传回 0
 	final private static int leapMonth(int y) {
 		int result = (int) (lunarInfo[y - 1900] & 0xf);
 		return result;
@@ -171,7 +171,7 @@ public class LunarCalendar {
 		setYear(year); // 设置公历对应的农历年份
 
 		yearCyl = iYear - 1864;
-		leapMonth = leapMonth(iYear); // 闰哪个月,1-12
+		leapMonth = leapMonth(iYear); // 闰哪个月,daybg1-12
 		leap = false;
 
 		// 用当年的天数offset,逐个减去每月（农历）的天数，求出当天是本月的第几天
@@ -267,13 +267,13 @@ public class LunarCalendar {
 			return chineseNumber[month - 1] + "月";
 		else
 			return getChinaDayString(day);
-		// return year + "年" + (leap ? "闰" : "") + chineseNumber[month - 1] +
+		// return year + "年" + (leap ? "闰" : "") + chineseNumber[month - daybg1] +
 		// "月" + getChinaDayString(day);
 	}
 
 	/*
 	 * public static void main(String[] args) { System.out.println(new
-	 * LunarCalendar().getLunarDate(2012, 1, 23)); }
+	 * LunarCalendar().getLunarDate(2012, daybg1, 23)); }
 	 */
 
 	public int getLeapMonth() {

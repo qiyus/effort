@@ -10,6 +10,7 @@ import com.vigorx.effort.entity.EffortInfo;
 import com.vigorx.effort.entity.PunchesInfo;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -62,7 +63,7 @@ public class EffortOperations {
         values.put(DataBaseWrapper.EFFORT_ALARM, effort.getAlarm());
 
         long effortId = mDatabase.insert(DataBaseWrapper.EFFORT_TABLE, null, values);
-        addPunchesByEffort((int)effortId);
+        addPunchesByEffort((int) effortId);
 
         return effortId;
     }
@@ -88,6 +89,31 @@ public class EffortOperations {
 
         Cursor cursor = mDatabase.query(DataBaseWrapper.EFFORT_TABLE,
                 EFFORT_TABLE_COLUMNS, null, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            EffortInfo effort = new EffortInfo();
+            effort.setId(cursor.getInt(0));
+            effort.setTitle(cursor.getString(1));
+            effort.setStartDate(cursor.getString(2));
+            effort.setHaveAlarm(cursor.getInt(3));
+            effort.setAlarm(cursor.getString(4));
+            effort.setPunches(getPunchesByEffort(effort.getId()));
+            efforts.add(effort);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return efforts;
+    }
+
+    public List<EffortInfo> getTodayEffort() {
+        ArrayList<EffortInfo> efforts = new ArrayList();
+
+        String selection = "julianday('now')-julianday(" + DataBaseWrapper.EFFORT_DATE + ")"
+                + " > " + EffortInfo.EFFORT_SIZE;
+        Cursor cursor = mDatabase.query(DataBaseWrapper.EFFORT_TABLE,
+                EFFORT_TABLE_COLUMNS, selection, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -133,12 +159,14 @@ public class EffortOperations {
         }
     }
 
-    public void punch(PunchesInfo punches) {
-        ContentValues values = new ContentValues();
-        values.put(DataBaseWrapper.PUNCHES_COMPLETE, punches.getComplete());
+    public void updatePunches(PunchesInfo[] punches) {
+        for (int i = 0; i < EffortInfo.EFFORT_SIZE; i++) {
+            ContentValues values = new ContentValues();
+            values.put(DataBaseWrapper.PUNCHES_COMPLETE, punches[i].getComplete());
 
-        mDatabase.update(DataBaseWrapper.EFFORT_TABLE, values,
-                DataBaseWrapper.PUNCHES_ID + " = " + punches.getId(), null);
+            int update = mDatabase.update(DataBaseWrapper.PUNCHES_TABLE, values,
+                    DataBaseWrapper.PUNCHES_ID + " = " + punches[i].getId(), null);
+        }
     }
 
     public void deletePunchesByEffort(int effortId) {
@@ -147,12 +175,10 @@ public class EffortOperations {
     }
 
     private PunchesInfo[] getPunchesByEffort(int effortId) {
-        String selection = DataBaseWrapper.EFFORT_ID + " = " + effortId;
+        String selection = DataBaseWrapper.PUNCHES_EFFORT_ID + " = " + effortId;
         Cursor cursor = mDatabase.query(DataBaseWrapper.PUNCHES_TABLE,
                 PUNCHES_TABLE_COLUMNS, selection, null, null, null, DataBaseWrapper.PUNCHES_ID + " asc");
         cursor.moveToFirst();
-        int len = cursor.getCount();
-
         PunchesInfo[] infos = new PunchesInfo[EffortInfo.EFFORT_SIZE];
 
         int index = 0;
