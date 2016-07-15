@@ -95,4 +95,8 @@ public class EffortListAdapter extends BaseAdapter {
         GridView gridView;
     }
 
+    public void notifyGridViewDataChanged() {
+
+    }
+
 }

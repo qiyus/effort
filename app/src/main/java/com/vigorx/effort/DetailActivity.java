@@ -2,17 +2,18 @@ package com.vigorx.effort;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.GridView;
-import android.widget.Toast;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -21,23 +22,24 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.vigorx.effort.calendar.CalendarAdapter;
 import com.vigorx.effort.calendar.CalendarView;
 import com.vigorx.effort.calendar.ClickDataListener;
 import com.vigorx.effort.database.EffortOperations;
 import com.vigorx.effort.entity.EffortInfo;
 import com.vigorx.effort.entity.PunchesInfo;
+import com.vigorx.effort.util.ScreenCatcher;
 
+import java.io.File;
 import java.util.ArrayList;
 
-public class DetailActivity extends AppCompatActivity implements ClickDataListener{
-
+public class DetailActivity extends AppCompatActivity implements ClickDataListener {
+    private static final String IMAGE_NAME = "effort_detail.png";
     private static final String TAG = "DetailActivity";
     public static final String EFFORT_KEY = "effort";
+    public static final int EDIT_REQUEST_CODE = 1;
 
     private PieChart mChart;
     private EffortInfo mEffort;
-    private CalendarView calendarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +58,8 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
 
         mEffort = getIntent().getParcelableExtra(EFFORT_KEY);
 
-        calendarView = (CalendarView) findViewById(R.id.calendar);
+        CalendarView calendarView = (CalendarView) findViewById(R.id.calendar);
+        assert calendarView != null;
         calendarView.initView(mEffort.getStartDate(), mEffort.getPunches());
         calendarView.setClickDataListener(this);
 
@@ -67,7 +70,6 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
     @Override
     protected void onResume() {
         super.onResume();
-        mChart.invalidate();
     }
 
     @Override
@@ -80,6 +82,15 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
         operations.close();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == EDIT_REQUEST_CODE && resultCode == RESULT_OK) {
+            mEffort = data.getParcelableExtra(AddActivity.EFFORT_KEY);
+            showPieChart();
+        }
+    }
+
     private void showPieChart() {
         float fontSize = 13f;
         // 半径
@@ -89,8 +100,7 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
         // 饼图中间的文字
         if (mEffort.getHaveAlarm() == 1) {
             mChart.setCenterText(mEffort.getAlarm());
-        }
-        else {
+        } else {
             mChart.setCenterText(getResources().getString(R.string.alarm_off));
         }
         mChart.setCenterTextSize(fontSize);
@@ -122,6 +132,8 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
         l.setYEntrySpace(0f);
         l.setYOffset(0f);
         l.setTextSize(fontSize);
+
+        mChart.invalidate();
     }
 
     private PieData getPieData() {
@@ -171,16 +183,24 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_share:
-                Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+                String imagePath = Environment.getExternalStorageDirectory().getPath() + File.separator + IMAGE_NAME;
+                ScreenCatcher.saveScreenToPNG(DetailActivity.this, imagePath);
+                Uri imageUri = Uri.fromFile(new File(imagePath));
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                shareIntent.setType("image/*");
+                startActivity(Intent.createChooser(shareIntent,
+                        getResources().getString(R.string.share_title)));
                 break;
             case R.id.action_edit:
                 Intent intent = new Intent(DetailActivity.this, AddActivity.class);
                 intent.putExtra(AddActivity.TYPE_KEY, AddActivity.TYPE_EDIT);
                 intent.putExtra(AddActivity.EFFORT_KEY, mEffort);
-                startActivity(intent);
+                startActivityForResult(intent, EDIT_REQUEST_CODE);
                 break;
             case R.id.action_delete:
-                AlertDialog dialog = new AlertDialog.Builder(DetailActivity.this)
+                AlertDialog dialog = new AlertDialog.Builder(DetailActivity.this, R.style.customAlertDialog)
                         .setTitle(R.string.delete_caption)
                         .setIcon(android.R.drawable.ic_menu_delete)
                         .setMessage(R.string.delete_confirm)

@@ -1,7 +1,9 @@
 package com.vigorx.effort;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,20 +15,25 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.vigorx.effort.database.EffortOperations;
 import com.vigorx.effort.entity.EffortInfo;
+import com.vigorx.effort.entity.PunchesInfo;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private ListView mListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +42,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer =  (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         assert drawer != null;
@@ -45,23 +52,24 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
+
+        mListView =  (ListView) findViewById(R.id.list);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        ListView listView = (ListView) findViewById(R.id.list);
 
         // 数据库操作
         EffortOperations effortOperations = EffortOperations.getInstance(this);
         effortOperations.open();
-        List<EffortInfo> data = effortOperations.getAllEffort();
+        List<EffortInfo> data = effortOperations.getVisibleEffort();
         effortOperations.close();
 
-        assert listView != null;
-        listView.setAdapter(new EffortListAdapter(this, data));
+        assert mListView != null;
+        mListView.setAdapter(new EffortListAdapter(this, data));
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -106,22 +114,37 @@ public class MainActivity extends AppCompatActivity
                 startActivity(addIntent);
                 break;
             case R.id.action_punch:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.customAlertDialog);
-                builder.setIcon(android.R.drawable.ic_menu_today);
-                builder.setTitle(R.string.punch_to_day);
-                builder.setMultiChoiceItems(getTodayTitle(), getTodayComplete(), new DialogInterface.OnMultiChoiceClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                        Toast.makeText(MainActivity.this, R.string.msg_work, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                EffortOperations operations = EffortOperations.getInstance(MainActivity.this);
+                operations.open();
+                final List<EffortInfo> efforts = operations.getEffortByToday();
+                operations.close();
 
-                builder.setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(MainActivity.this, R.string.msg_work, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.customAlertDialog)
+                        .setIcon(android.R.drawable.ic_menu_today)
+                        .setTitle(R.string.punch_to_day)
+                        .setMultiChoiceItems(getTodayTitle(efforts), getTodayComplete(efforts), new DialogInterface.OnMultiChoiceClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                                EffortInfo effortInfo = efforts.get(which);
+                                setTodayComplete(effortInfo, isChecked ? 1 : 0);
+                                efforts.set(which, effortInfo);
+                            }
+                        })
+                        .setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                EffortOperations operations = EffortOperations.getInstance(MainActivity.this);
+                                operations.open();
+                                for (EffortInfo effort:efforts) {
+                                    operations.updatePunches(effort.getPunches());
+                                }
+                                List<EffortInfo> data = operations.getVisibleEffort();
+                                EffortListAdapter adapter = new EffortListAdapter(MainActivity.this, data);
+                                mListView.setAdapter(adapter);
+
+                                operations.close();
+                            }
+                        });
 
                 builder.create().show();
 
@@ -137,12 +160,51 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private String[] getTodayTitle() {
-        return new String[]{"测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标1", "测试数据-假定目标12"};
+    private String[] getTodayTitle(List<EffortInfo> efforts) {
+        int count = efforts.size();
+        String[] title = new String[count];
+        for (int i = 0; i < count; i++) {
+            title[i] = efforts.get(i).getTitle();
+        }
+        return title;
     }
 
-    private boolean[] getTodayComplete() {
-        return new boolean[]{false, true, false, true, false, true, false};
+    private boolean[] getTodayComplete(List<EffortInfo> efforts) {
+        int count = efforts.size();
+        boolean[] complete = new boolean[count];
+        for (int i = 0; i < count; i++) {
+            complete[i] = getToadyComplete(efforts.get(i));
+        }
+        return complete;
+    }
+
+    private boolean getToadyComplete(EffortInfo effort) {
+        PunchesInfo punchesInfo = getPunchesInfoToday(effort);
+        return (1 == punchesInfo.getComplete());
+    }
+
+    private void setTodayComplete(EffortInfo effort, int complete) {
+
+        PunchesInfo punchesInfo = getPunchesInfoToday(effort);
+        punchesInfo.setComplete(complete);
+    }
+
+    private PunchesInfo getPunchesInfoToday(EffortInfo effort) {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format;
+        format = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar calendar = Calendar.getInstance();
+        try {
+            calendar.setTime(format.parse(effort.getStartDate()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        int startDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+
+        calendar.setTime(new Date());
+        int currentDayOfYear = calendar.get(Calendar.DAY_OF_YEAR);
+
+        int offset = currentDayOfYear - startDayOfYear;
+        return effort.getPunches()[offset];
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -158,7 +220,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_copyright) {
             Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_send) {
-            Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(Uri.parse("mailto:hsly_song@163.com"));
+            intent.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.mail_title));
+            intent.putExtra(Intent.EXTRA_TEXT, "");
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

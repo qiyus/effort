@@ -2,6 +2,7 @@ package com.vigorx.effort;
 
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -96,8 +97,12 @@ public class AddActivity extends AppCompatActivity {
                     operator.updateEffort(mEffort);
                 }
                 operator.close();
+
+                // 返回修正后的数据给详细画面。
+                Intent intent = new Intent();
+                intent.putExtra(EFFORT_KEY, mEffort);
+                setResult(RESULT_OK, intent);
                 finish();
-                v.setEnabled(false);
             }
         });
 
@@ -119,8 +124,19 @@ public class AddActivity extends AppCompatActivity {
     private DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            String date = year + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
+
+            String month = String.valueOf(monthOfYear + 1);
+            if (monthOfYear < 9) {
+                month = "0" + month;
+            }
+
+            String day = String.valueOf(dayOfMonth);
+            if (dayOfMonth < 10) {
+                day = "0" + day;
+            }
+            String date = year + "-" + month + "-" + day;
             Log.i(date, TAG);
+
             mStartDate.setText(date);
             mEffort.setStartDate(date);
         }

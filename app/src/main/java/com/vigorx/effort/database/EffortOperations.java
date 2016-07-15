@@ -84,11 +84,12 @@ public class EffortOperations {
                 DataBaseWrapper.EFFORT_ID + " = " + effort.getId(), null);
     }
 
-    public List<EffortInfo> getAllEffort() {
+    public List<EffortInfo> getVisibleEffort() {
         List<EffortInfo> efforts = new ArrayList();
-
+        String selection = "julianday('now') - julianday(" + DataBaseWrapper.EFFORT_DATE + ")"
+                + " < " + EffortInfo.EFFORT_SIZE;
         Cursor cursor = mDatabase.query(DataBaseWrapper.EFFORT_TABLE,
-                EFFORT_TABLE_COLUMNS, null, null, null, null, null);
+                EFFORT_TABLE_COLUMNS, selection, null, null, null, null);
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -107,11 +108,12 @@ public class EffortOperations {
         return efforts;
     }
 
-    public List<EffortInfo> getTodayEffort() {
-        ArrayList<EffortInfo> efforts = new ArrayList();
+    public List<EffortInfo> getEffortByToday() {
+        ArrayList efforts = new ArrayList();
 
-        String selection = "julianday('now')-julianday(" + DataBaseWrapper.EFFORT_DATE + ")"
-                + " > " + EffortInfo.EFFORT_SIZE;
+        String selection = "julianday('now') - julianday(" + DataBaseWrapper.EFFORT_DATE + ")"
+                + " < " + EffortInfo.EFFORT_SIZE
+                + " and julianday ('now') - julianday(" + DataBaseWrapper.EFFORT_DATE +") > 0 ";
         Cursor cursor = mDatabase.query(DataBaseWrapper.EFFORT_TABLE,
                 EFFORT_TABLE_COLUMNS, selection, null, null, null, null);
 
