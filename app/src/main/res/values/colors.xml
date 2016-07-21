@@ -3,9 +3,10 @@
     <color name="colorPrimary">@android:color/transparent</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorComplete">#A0522D</color>
-    <color name="colorAll">#FFC125</color>
+    <color name="colorAll">#c7a44b</color>
     <color name="colorProgressPie">#CDCDCD</color>
     <color name="colorCompletePie">#90BCDF</color>
     <color name="colorDialog">#EAFFEFD5</color>
+    <color name="colorReportListNumber">#8bace439</color>
+    <color name="colorStroke">#84847a</color>
 </resources>

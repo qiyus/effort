@@ -84,6 +84,30 @@ public class EffortOperations {
                 DataBaseWrapper.EFFORT_ID + " = " + effort.getId(), null);
     }
 
+    public List<EffortInfo> getYearEffort(String year) {
+        List<EffortInfo> efforts = new ArrayList();
+        String selection = "strftime('%Y'," + DataBaseWrapper.EFFORT_DATE + ")"
+                + " = '" + year + "'";
+        Cursor cursor = mDatabase.query(DataBaseWrapper.EFFORT_TABLE,
+                EFFORT_TABLE_COLUMNS, selection, null, null, null, null);
+
+        cursor.moveToFirst();
+        while (!cursor.isAfterLast()) {
+            EffortInfo effort = new EffortInfo();
+            effort.setId(cursor.getInt(0));
+            effort.setTitle(cursor.getString(1));
+            effort.setStartDate(cursor.getString(2));
+            effort.setHaveAlarm(cursor.getInt(3));
+            effort.setAlarm(cursor.getString(4));
+            effort.setPunches(getPunchesByEffort(effort.getId()));
+            efforts.add(effort);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        return efforts;
+    }
+
     public List<EffortInfo> getVisibleEffort() {
         List<EffortInfo> efforts = new ArrayList();
         String selection = "julianday('now') - julianday(" + DataBaseWrapper.EFFORT_DATE + ")"
@@ -134,21 +158,6 @@ public class EffortOperations {
         return efforts;
     }
 
-    public EffortInfo getEffortById(int id) {
-        String selection = DataBaseWrapper.EFFORT_ID + " = " + id;
-        Cursor cursor = mDatabase.query(DataBaseWrapper.EFFORT_TABLE,
-                EFFORT_TABLE_COLUMNS, selection, null, null, null, null);
-        cursor.moveToFirst();
-        EffortInfo effort = new EffortInfo();
-        effort.setId(cursor.getInt(0));
-        effort.setTitle(cursor.getString(1));
-        effort.setStartDate(cursor.getString(2));
-        effort.setHaveAlarm(cursor.getInt(3));
-        effort.setAlarm(cursor.getString(4));
-        cursor.close();
-        return effort;
-    }
-
     private void addPunchesByEffort(int effortId) {
 
         for (int i = 0; i < EffortInfo.EFFORT_SIZE; i++) {
@@ -169,11 +178,6 @@ public class EffortOperations {
             int update = mDatabase.update(DataBaseWrapper.PUNCHES_TABLE, values,
                     DataBaseWrapper.PUNCHES_ID + " = " + punches[i].getId(), null);
         }
-    }
-
-    public void deletePunchesByEffort(int effortId) {
-        mDatabase.delete(DataBaseWrapper.PUNCHES_TABLE, DataBaseWrapper.PUNCHES_EFFORT_ID
-                + " = " + effortId, null);
     }
 
     private PunchesInfo[] getPunchesByEffort(int effortId) {

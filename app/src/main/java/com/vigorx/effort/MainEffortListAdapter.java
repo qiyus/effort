@@ -17,14 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EffortListAdapter extends BaseAdapter {
+public class MainEffortListAdapter extends BaseAdapter {
     private static final String WIDGET_IMAGE = "image";
 
     private Context mContext;
     private LayoutInflater mInflater;
     private List<EffortInfo> mData;
 
-    public EffortListAdapter(Context context, List<EffortInfo> data) {
+    public MainEffortListAdapter(Context context, List<EffortInfo> data) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mData = data;
@@ -82,7 +82,7 @@ public class EffortListAdapter extends BaseAdapter {
             dataList.add(map);
         }
 
-        SimpleAdapter imageAdapter = new SimpleAdapter(mContext, dataList, R.layout.on_off_item, key, id);
+        SimpleAdapter imageAdapter = new SimpleAdapter(mContext, dataList, R.layout.effort_list_grid_item, key, id);
         viewHolder.gridView.setAdapter(imageAdapter);
         viewHolder.gridView.setClickable(false);
         viewHolder.gridView.setPressed(false);
@@ -94,9 +94,4 @@ public class EffortListAdapter extends BaseAdapter {
         TextView title;
         GridView gridView;
     }
-
-    public void notifyGridViewDataChanged() {
-
-    }
-
 }

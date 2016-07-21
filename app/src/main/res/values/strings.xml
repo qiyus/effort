@@ -43,9 +43,7 @@
 
     <!-- ReportActivity -->
     <string name="month">月</string>
-    <string name="report_chart_title">今年目标完成情况</string>
-    <string name="complete_number">完成数</string>
-    <string name="all_number">设立数</string>
+    <string name="report_chart_title">每月设定目标数目</string>
 
     <!-- DetailActivity -->
     <string name="startDate">开始日期：</string>

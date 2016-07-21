@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
         effortOperations.close();
 
         assert mListView != null;
-        mListView.setAdapter(new EffortListAdapter(this, data));
+        mListView.setAdapter(new MainEffortListAdapter(this, data));
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity
                                     operations.updatePunches(effort.getPunches());
                                 }
                                 List<EffortInfo> data = operations.getVisibleEffort();
-                                EffortListAdapter adapter = new EffortListAdapter(MainActivity.this, data);
+                                MainEffortListAdapter adapter = new MainEffortListAdapter(MainActivity.this, data);
                                 mListView.setAdapter(adapter);
 
                                 operations.close();
