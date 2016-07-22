@@ -35,6 +35,10 @@
             android:name=".ReportActivity"
             android:label="@string/title_activity_report"
             android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".AbortActivity"
+            android:label="@string/title_activity_abort"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

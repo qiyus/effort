@@ -55,4 +55,14 @@
     <string name="delete_ok">确认</string>
     <string name="delete_cancel">取消</string>
     <string name="share_title">分享</string>
+    
+    <!-- AbortActivity -->
+    <string name="title_activity_abort">关于</string>
+    <string name="abort_app_name">目标28</string>
+    <string name="abort_detail">一个习惯的培养并非一朝一夕便可以完成的。它需要经过长期、反复地坚持，最后才能成为一个不易抛弃的真正的习惯。一个好习惯无论其大小。你只要坚持培养下来了，都是件非常好的、有益的事。“目标28”是为此而生的一款习惯记录工具，以打卡的形式，记录你每一天的努力。</string>
+    <string name="abort_subject">帮助培养习惯的打卡工具。</string>
+    <string name="abort_author">作者：</string>
+    <string name="abort_author_memo">宋雷，一位在软件行业打滚了多年的程序员，喜欢美食、读书、健身和编程。</string>
+    <string name="abort_version">版本 1.0.0</string>
+    <string name="abort_copyright">版权所有 2016 Vigorx工作室,保留所有权利。</string>
 </resources>

@@ -9,4 +9,5 @@
     <color name="colorDialog">#EAFFEFD5</color>
     <color name="colorReportListNumber">#8bace439</color>
     <color name="colorStroke">#84847a</color>
+    <color name="colorAbort">#141536</color>
 </resources>

@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 EffortInfo effort = (EffortInfo) parent.getAdapter().getItem(position);
                 intent.putExtra(DetailActivity.EFFORT_KEY, effort);
                 startActivity(intent);
@@ -218,7 +218,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_download) {
             Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_copyright) {
-            Toast.makeText(this, R.string.msg_work, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, AbortActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_send) {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("mailto:hsly_song@163.com"));
