@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.vigorx.effort.database.EffortOperations;
 import com.vigorx.effort.entity.EffortInfo;
 import com.vigorx.effort.entity.PunchesInfo;
+import com.vigorx.effort.util.AlarmAssemblage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity
         effortOperations.open();
         List<EffortInfo> data = effortOperations.getVisibleEffort();
         effortOperations.close();
+        AlarmAssemblage alarms = AlarmAssemblage.getInstance(this);
+        alarms.start();
 
         assert mListView != null;
         mListView.setAdapter(new MainEffortListAdapter(this, data));

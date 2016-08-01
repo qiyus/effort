@@ -40,6 +40,11 @@
             android:name=".AbortActivity"
             android:label="@string/title_activity_abort"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <receiver android:name=".util.AlarmReceiver">
+            <intent-filter>
+                <action android:name="EFFORT_ALARM"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

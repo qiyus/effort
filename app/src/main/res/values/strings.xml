@@ -65,4 +65,7 @@
     <string name="abort_author_memo">宋雷，一位在软件行业打滚了多年的程序员，喜欢美食、读书、健身和编程。</string>
     <string name="abort_version">版本 1.0.0</string>
     <string name="abort_copyright">版权所有 2016 Vigorx工作室,保留所有权利。</string>
+
+    <!-- Alarm -->
+    <string name="alarm_title">提醒</string>
 </resources>
