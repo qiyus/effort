@@ -42,7 +42,7 @@ public class EffortOperations {
     }
 
     private EffortOperations(Context context) {
-        mDBWrapper = new DataBaseWrapper(context);
+        mDBWrapper = new DataBaseWrapper(context.getApplicationContext());
     }
 
     public void open() throws SQLException {

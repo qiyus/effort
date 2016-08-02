@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.vigorx.effort.database.EffortOperations;
 import com.vigorx.effort.entity.EffortInfo;
 import com.vigorx.effort.entity.PunchesInfo;
-import com.vigorx.effort.util.AlarmAssemblage;
+import com.vigorx.effort.util.EffortAlarms;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,13 +37,20 @@ public class MainActivity extends AppCompatActivity
     private ListView mListView;
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EffortAlarms alarms = EffortAlarms.getInstance(this);
+        alarms.clear();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer =  (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         assert drawer != null;
@@ -54,7 +61,19 @@ public class MainActivity extends AppCompatActivity
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
 
-        mListView =  (ListView) findViewById(R.id.list);
+        mListView = (ListView) findViewById(R.id.list);
+
+        // 今日的目标设置闹钟。
+        EffortOperations effortOperations = EffortOperations.getInstance(this);
+        effortOperations.open();
+        List<EffortInfo> todayEffort = effortOperations.getEffortByToday();
+        effortOperations.close();
+        EffortAlarms alarms = EffortAlarms.getInstance(this);
+        for (EffortInfo info : todayEffort) {
+            if (info.getHaveAlarm() == 1) {
+                alarms.add(info.getId(), info.getTitle(), info.getAlarm());
+            }
+        }
     }
 
     @Override
@@ -66,8 +85,6 @@ public class MainActivity extends AppCompatActivity
         effortOperations.open();
         List<EffortInfo> data = effortOperations.getVisibleEffort();
         effortOperations.close();
-        AlarmAssemblage alarms = AlarmAssemblage.getInstance(this);
-        alarms.start();
 
         assert mListView != null;
         mListView.setAdapter(new MainEffortListAdapter(this, data));
@@ -133,12 +150,12 @@ public class MainActivity extends AppCompatActivity
                                 efforts.set(which, effortInfo);
                             }
                         })
-                        .setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 EffortOperations operations = EffortOperations.getInstance(MainActivity.this);
                                 operations.open();
-                                for (EffortInfo effort:efforts) {
+                                for (EffortInfo effort : efforts) {
                                     operations.updatePunches(effort.getPunches());
                                 }
                                 List<EffortInfo> data = operations.getVisibleEffort();

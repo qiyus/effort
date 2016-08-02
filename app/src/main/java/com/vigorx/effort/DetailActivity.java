@@ -2,8 +2,6 @@ package com.vigorx.effort;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,6 +25,7 @@ import com.vigorx.effort.calendar.ClickDataListener;
 import com.vigorx.effort.database.EffortOperations;
 import com.vigorx.effort.entity.EffortInfo;
 import com.vigorx.effort.entity.PunchesInfo;
+import com.vigorx.effort.util.EffortAlarms;
 import com.vigorx.effort.util.ScreenCatcher;
 
 import java.io.File;
@@ -34,10 +33,10 @@ import java.util.ArrayList;
 
 public class DetailActivity extends AppCompatActivity implements ClickDataListener {
     private static final String IMAGE_NAME = "effort_detail.png";
-    private static final String TAG = "DetailActivity";
     public static final String EFFORT_KEY = "effort";
     public static final int EDIT_REQUEST_CODE = 1;
 
+    private CalendarView mCalendarView;
     private PieChart mChart;
     private EffortInfo mEffort;
 
@@ -58,10 +57,10 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
 
         mEffort = getIntent().getParcelableExtra(EFFORT_KEY);
 
-        CalendarView calendarView = (CalendarView) findViewById(R.id.calendar);
-        assert calendarView != null;
-        calendarView.initView(mEffort.getStartDate(), mEffort.getPunches());
-        calendarView.setClickDataListener(this);
+        mCalendarView = (CalendarView) findViewById(R.id.calendar);
+        assert mCalendarView != null;
+        mCalendarView.initView(mEffort.getStartDate(), mEffort.getPunches());
+        mCalendarView.setClickDataListener(this);
 
         mChart = (PieChart) findViewById(R.id.detail_chart);
         showPieChart();
@@ -87,6 +86,7 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == EDIT_REQUEST_CODE && resultCode == RESULT_OK) {
             mEffort = data.getParcelableExtra(AddActivity.EFFORT_KEY);
+            mCalendarView.initView(mEffort.getStartDate(), mEffort.getPunches());
             showPieChart();
         }
     }
@@ -204,17 +204,23 @@ public class DetailActivity extends AppCompatActivity implements ClickDataListen
                         .setTitle(R.string.delete_caption)
                         .setIcon(android.R.drawable.ic_menu_delete)
                         .setMessage(R.string.delete_confirm)
-                        .setPositiveButton(R.string.delete_ok, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 EffortOperations operator = EffortOperations.getInstance(DetailActivity.this);
                                 operator.open();
                                 operator.deleteEffort(mEffort.getId());
                                 operator.close();
+
+                                // 删除提醒设置
+                                EffortAlarms alarms = EffortAlarms.getInstance(DetailActivity.this);
+                                alarms.remove(mEffort.getId());
+
+                                // 返回列表页面
                                 finish();
                             }
                         })
-                        .setNegativeButton(R.string.delete_cancel, new DialogInterface.OnClickListener() {
+                        .setNegativeButton(R.string.CANCEL, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                             }

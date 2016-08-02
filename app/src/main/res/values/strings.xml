@@ -52,10 +52,12 @@
     <string name="complete">已完成</string>
     <string name="delete_caption">删除</string>
     <string name="delete_confirm">确认删除吗？</string>
-    <string name="delete_ok">确认</string>
-    <string name="delete_cancel">取消</string>
+    <string name="date_caption">开始日期变更</string>
+    <string name="date_confirm">变更开始日期，会导致之前的打卡记录被重置为未打卡状态，确认进行吗？</string>
+    <string name="OK">确认</string>
+    <string name="CANCEL">取消</string>
     <string name="share_title">分享</string>
-    
+
     <!-- AbortActivity -->
     <string name="title_activity_abort">关于</string>
     <string name="abort_app_name">目标28</string>
