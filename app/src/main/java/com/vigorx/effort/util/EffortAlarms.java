@@ -40,7 +40,7 @@ public class EffortAlarms {
         int minute = Integer.parseInt(time.split(":")[1]);
         Intent intent = new Intent(mContext, AlarmActivity.class);
         intent.putExtra(ALARM_MESSAGE, message);
-        PendingIntent pi = PendingIntent.getService(mContext, id, intent, 0);
+        PendingIntent pi = PendingIntent.getActivity(mContext, id, intent, 0);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, hour);
