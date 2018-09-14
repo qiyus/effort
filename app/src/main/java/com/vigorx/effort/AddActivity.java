@@ -157,29 +157,34 @@ public class AddActivity extends AppCompatActivity {
 
             mTMPStartDate = year + "-" + month + "-" + day;
 
-            AlertDialog dialog = new AlertDialog.Builder(AddActivity.this, R.style.customAlertDialog)
-                    .setTitle(R.string.date_caption)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setMessage(R.string.date_confirm)
-                    .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mStartDate.setText(mTMPStartDate);
-                            mEffort.setStartDate(mTMPStartDate);
-                            PunchesInfo[] punches = mEffort.getPunches();
-                            for (int i = 0; i < EffortInfo.EFFORT_SIZE; i ++) {
-                                punches[i].setComplete(0);
+            if (mType == TYPE_EDIT) {
+                AlertDialog dialog = new AlertDialog.Builder(AddActivity.this, R.style.customAlertDialog)
+                        .setTitle(R.string.date_caption)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setMessage(R.string.date_confirm)
+                        .setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mStartDate.setText(mTMPStartDate);
+                                mEffort.setStartDate(mTMPStartDate);
+                                PunchesInfo[] punches = mEffort.getPunches();
+                                for (int i = 0; i < EffortInfo.EFFORT_SIZE; i ++) {
+                                    punches[i].setComplete(0);
+                                }
                             }
-                        }
-                    })
-                    .setNegativeButton(R.string.CANCEL, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            mStartDate.setText(mEffort.getStartDate());
-                        }
-                    })
-                    .create();
-            dialog.show();
+                        })
+                        .setNegativeButton(R.string.CANCEL, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mStartDate.setText(mEffort.getStartDate());
+                            }
+                        })
+                        .create();
+                dialog.show();
+            } else {
+                mStartDate.setText(mTMPStartDate);
+                mEffort.setStartDate(mTMPStartDate);
+            }
         }
     };
 }
